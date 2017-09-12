@@ -1,0 +1,6 @@
+task main() {
+  RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
+  RotateMotorEx(OUT_AB, -100, 360*11.5682102208, 0, true, true);
+  OnFwd(OUT_A, 100);
+  OnRev(OUT_B, 100);
+}
