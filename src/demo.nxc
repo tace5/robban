@@ -1,6 +1,14 @@
 task main() {
-  RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
-  RotateMotorEx(OUT_AB, -100, 360*11.5682102208, 0, true, true);
+
+  //SetOutput	(OUT_C, Power, 0, OutputMode, OUT_MODE_BRAKE);
+    SetOutput(OUT_C, Power, 0,
+                    OutputMode,  OUT_MODE_BRAKE + OUT_MODE_MOTORON + OUT_MODE_REGULATED,
+                    RegMode,     OUT_REGMODE_SPEED,
+                    RunState,    OUT_RUNSTATE_RUNNING,
+                    UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
+  Wait(10000);
+  //RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
+  RotateMotorEx(OUT_AB, -100, 360*5, 0, true, true);
   OnFwd(OUT_A, 100);
   OnRev(OUT_B, 100);
 }
