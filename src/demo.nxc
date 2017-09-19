@@ -3,6 +3,7 @@ void WallMan();
 task main() {
   /* Setup of sensors */
   SetSensorUltrasonic(S1);
+  /* Lock C motor in place, see documentation for each parameter */
   SetOutput(OUT_C, Power, 0,
                    OutputMode,  OUT_MODE_BRAKE + OUT_MODE_MOTORON + OUT_MODE_REGULATED,
                    RegMode,     OUT_REGMODE_SPEED,
@@ -15,9 +16,10 @@ task main() {
   //RotateMotor(OUT_C, -40, 60);
 }
 
+/* Reorient robot to face wall. */
 safecall void WallMan() {
-  float closest_point = 0;
-  float distance;
+  int closest_point = 0;
+  int distance;
   
   OnFwd(OUT_A, TURNING_SPEED);
   while (true) {
