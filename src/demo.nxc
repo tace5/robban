@@ -1,14 +1,37 @@
+#define TURNING_SPEED 45
+void WallMan();
 task main() {
+  /* Setup of sensors */
+  SetSensorUltrasonic(S1);
+  SetOutput(OUT_C, Power, 0,
+                   OutputMode,  OUT_MODE_BRAKE + OUT_MODE_MOTORON + OUT_MODE_REGULATED,
+                   RegMode,     OUT_REGMODE_SPEED,
+                   RunState,    OUT_RUNSTATE_RUNNING,
+                   UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
+  ////Wait(10000);
+  ////RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
+  //RotateMotorEx(OUT_AB, -100, 360*5, 0, true, true);
+  WallMan();
+  //RotateMotor(OUT_C, -40, 60);
+}
 
-  //SetOutput	(OUT_C, Power, 0, OutputMode, OUT_MODE_BRAKE);
-    SetOutput(OUT_C, Power, 0,
-                    OutputMode,  OUT_MODE_BRAKE + OUT_MODE_MOTORON + OUT_MODE_REGULATED,
-                    RegMode,     OUT_REGMODE_SPEED,
-                    RunState,    OUT_RUNSTATE_RUNNING,
-                    UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
-  Wait(10000);
-  //RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
-  RotateMotorEx(OUT_AB, -100, 360*5, 0, true, true);
-  OnFwd(OUT_A, 100);
-  OnRev(OUT_B, 100);
+safecall void WallMan() {
+  float closest_point = 0;
+  float distance;
+  
+  OnFwd(OUT_A, TURNING_SPEED);
+  while (true) {
+    distance = SensorUS(S1); /* Get value of ultrasonic reader */
+    NumOut(0, LCD_LINE2, distance);
+    if (distance < closest_point || closest_point == 0) {
+      closest_point = distance;     
+    } else if (distance > closest_point) {
+      OnFwd(OUT_A, MotorPower(OUT_A)*(-1));
+      while (distance != closest_point);
+      Off(OUT_A);
+    }
+    NumOut(0, LCD_LINE3, closest_point); 
+    Wait(MS_50);
+    ClearScreen();
+  }
 }
