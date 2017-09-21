@@ -1,5 +1,6 @@
 #define TURNING_SPEED 45
 void WallMan();
+int Sensor_GetClosestObject();
 task main() {
   /* Setup of sensors */
   SetSensorUltrasonic(S1);
@@ -9,8 +10,8 @@ task main() {
                    RegMode,     OUT_REGMODE_SPEED,
                    RunState,    OUT_RUNSTATE_RUNNING,
                    UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
-  ////Wait(10000);
-  ////RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
+  //Wait(10000);
+  //RotateMotorEx(OUT_AB, 100, 360*11.5682102208, 0, true, true);
   //RotateMotorEx(OUT_AB, -100, 360*5, 0, true, true);
   WallMan();
   //RotateMotor(OUT_C, -40, 60);
@@ -18,22 +19,37 @@ task main() {
 
 /* Reorient robot to face wall. */
 safecall void WallMan() {
-  int closest_point = 0;
+  int closest_point = Sensor_GetClosestObject();
   int distance;
   
   OnFwd(OUT_A, TURNING_SPEED);
   while (true) {
     distance = SensorUS(S1); /* Get value of ultrasonic reader */
     NumOut(0, LCD_LINE2, distance);
-    if (distance < closest_point || closest_point == 0) {
-      closest_point = distance;     
-    } else if (distance > closest_point) {
-      OnFwd(OUT_A, MotorPower(OUT_A)*(-1));
-      while (distance != closest_point);
+    if (distance <= closest_point) {
+      //closest_point = distance;
       Off(OUT_A);
     }
+   /* if (distance > closest_point) {
+      OnFwd(OUT_A, MotorPower(OUT_A)*(-1));
+      while (distance != closest_point);
+    } */
     NumOut(0, LCD_LINE3, closest_point); 
-    Wait(MS_50);
+    Wait(MS_40);
     ClearScreen();
   }
+}
+
+safecall int Sensor_GetClosestObject() {
+  int closest_object = SensorUS(S1);
+  ResetRotationCount(OUT_A);
+  OnFwd(OUT_A, TURNING_SPEED);
+  while (MotorRotationCount(OUT_A) < (360*2.14285714286)) {
+    if (SensorUS(S1) < closest_object) {
+      closest_object = SensorUS(S1); 
+    }
+    Wait(MS_40);
+  }
+  Off(OUT_A);
+  return closest_object;
 }
