@@ -1,8 +1,8 @@
 #define TURNING_SPEED 80 
-#define TURNING_WHEEL_RADIUS 11.3*2*PI
-#define TURNING_WHEEL_DIAMETER 5.6*PI
-#define TURNING_360 360*4.03571428571
-#define TURNING_90 (360*(4.03571428571/4))
+#define TURNING_ROBOT_DIAMETER 11.25
+#define TURNING_WHEEL_DIAMETER 5.6
+#define TURNING_360 (360*(TURNING_ROBOT_DIAMETER/TURNING_WHEEL_DIAMETER))
+#define TURNING_90 TURNING_360/4
 #define MOVE_100CM (360*5.68410511042)
 
 safecall void WallMan();
@@ -22,10 +22,8 @@ task main() {
                    UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
   WallMan();
   Movement_Rotate(1, TURNING_90);
-  RotateMotor(OUT_AB, 70, MOVE_100CM*0.4);
-  Wait(1000);
-  Movement_Rotate(-1, TURNING_90);
-  Wait(1000);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
+  Movement_Rotate(-1, TURNING_90+10);
   Movement_Distance(30);
   
 
@@ -35,10 +33,8 @@ task main() {
   Wait(3000);
   RotateMotor(OUT_C, 40, 80);
   
-  Movement_Rotate(-1, TURNING_90);
-  RotateMotor(OUT_AB, 70, MOVE_100CM*0.4);
-
-  // Here
+  Movement_Rotate(-1, TURNING_90+10);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
   Wait(1000);
   WallMan();
   Wait(1000);
@@ -54,7 +50,7 @@ safecall void WallMan() {
   int distance = 255;
   OnFwd(OUT_A, TURNING_SPEED);
   while (true) {
-    distance = SensorUS(S1); /* Get value of ultrasonic reader */
+    distance = SensorUS(S1);
     NumOut(0, LCD_LINE2, distance);
     if (distance-1 <= closest_point) {
       Off(OUT_A);
@@ -67,12 +63,11 @@ safecall void WallMan() {
 }
 
 safecall int Sensor_GetClosestObject() {
-  int closest_object = SensorUS(S1);
-  ResetRotationCount(OUT_A);
+  int closest_object = (SensorUS(S1) == 0) ? 255 : SensorUS(S1);
+  int initial_rotor_count = MotorRotationCount(OUT_A); 
   NumOut(0, LCD_LINE6, MotorRotationCount(OUT_A)); 
-  Wait(5000);
   OnFwd(OUT_A, TURNING_SPEED);
-  while (MotorRotationCount(OUT_A) <= TURNING_360) {
+  while (abs(MotorRotationCount(OUT_A)-initial_rotor_count) <= TURNING_360) {
     NumOut(0, LCD_LINE2, MotorRotationCount(OUT_A));
     if (SensorUS(S1) < closest_object) {
       closest_object = SensorUS(S1); 
@@ -84,8 +79,13 @@ safecall int Sensor_GetClosestObject() {
 }
 
 safecall void Movement_Rotate(int direction, int angle) {
-  int initial_rotor_count = MotorRotationCount(OUT_A);
+  /* int initial_rotor_count = MotorRotationCount(OUT_A);
   OnFwd(OUT_A, TURNING_SPEED*direction);
   while (abs(MotorRotationCount(OUT_A)-initial_rotor_count) <= angle);
-  Off(OUT_A);
+  Off(OUT_A); */
+  if (direction < 0) {
+    //angle += 1;
+  } 
+  RotateMotorEx(OUT_AB, TURNING_SPEED, angle, -100*direction, true, true);
+  Wait(1500);
 }
