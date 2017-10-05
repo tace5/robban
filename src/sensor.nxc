@@ -1,8 +1,0 @@
-
-task main() {
-    SetSensorUltrasonic(S1);
-    int distance = SensorUS(S1); /* Get value of ultrasonic reader */
-    NumOut(0, LCD_LINE2, distance);
-    until(ButtonPressed(BTNCENTER, true));
-}
-
