@@ -6,7 +6,6 @@
 #define MOVE_100CM (360*5.68410511042)
 #define MS_15 15
 
-void WallMan(byte engine, byte sensor);
 void Movement_Distance(byte engine, byte sensor, int distance); 
 void Movement_Rotate(byte engine, int direction, int angle);
 int Sensor_GetClosestObject(byte engine, byte sensor);
@@ -50,28 +49,26 @@ void Movement_Rotate(byte engine, int direction, int angle) {
     byte[]    sensor    Sensor to read.
   @return void
 */
-void WallMan(byte engine, byte sensor) {
-  int closest_point = Sensor_GetClosestObject(engine, sensor);
-  int distance = 255;
+inline void WallMan(byte engine, byte sensor) {
+  int closest_point = Sensor_GetClosestObject(OUT_A, S1);
+  int distance = 300;
   int last_distance = 255;
-
-  OnFwd(engine, TURNING_SPEED);
+  OnFwd(OUT_A, TURNING_SPEED);
   while (true) {
-    distance = SensorUS(sensor);
-    if (distance < last_distance && MotorPower(engine) > 35) {
-      OnFwd(engine, MotorPower(engine) - 3); 
-    } else if (distance > last_distance &&
-               MotorPower(engine) <= TURNING_SPEED) {
-      OnFwd(engine, MotorPower(engine) + 3);
+    distance = SensorUS(S1);
+    if (distance < last_distance && MotorPower(OUT_A) > 35) {
+      OnFwd(OUT_A, MotorPower(OUT_A) - 2); 
+    } else if (distance > last_distance && MotorPower(OUT_A) <= TURNING_SPEED) {
+      OnFwd(OUT_A, MotorPower(OUT_A) + 2);
     }
-    if (distance <= closest_point) {
-      Off(engine);
+    if (distance-1 <= closest_point) {
+      Off(OUT_A);
       break;
     }
     last_distance = distance;
     Wait(MS_15);
   }
-  Wait(MS_20);
+  Wait(20);
 }
 
 /*

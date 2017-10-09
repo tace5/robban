@@ -9,10 +9,11 @@ task main() {
                    RegMode,     OUT_REGMODE_SPEED,
                    RunState,    OUT_RUNSTATE_RUNNING,
                    UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
+  Wait(5000);
   WallMan(OUT_A, S1);
   Wait(1000);
   Movement_Rotate(OUT_AB, 1, TURNING_90);
-  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*2.5, 0, true, true);
   WallMan(OUT_A, S1);
   Movement_Distance(OUT_AB, S1, 30);
   
@@ -25,7 +26,7 @@ task main() {
   
   Movement_Distance(OUT_AB, S1, 50);
   Movement_Rotate(OUT_AB, -1, TURNING_90);
-  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*2.5, 0, true, true);
   Wait(20);
   WallMan(OUT_A, S1);
   Wait(20);
