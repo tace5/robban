@@ -25,7 +25,7 @@ task main() {
   WallMan();
   Wait(1000);
   Movement_Rotate(1, TURNING_90);
-  RotateMotorEx(OUT_AB, 70, MOVE_100CM*2.5, 0, true, true);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
   WallMan();
   //Movement_Rotate(-1, TURNING_90+15);
   Movement_Distance(30);
@@ -38,8 +38,8 @@ task main() {
   RotateMotor(OUT_C, 40, 80);
   
   Movement_Distance(50);
-  Movement_Rotate(-1, TURNING_90+15);
-  RotateMotorEx(OUT_AB, 70, MOVE_100CM*2.5, 0, true, true);
+  Movement_Rotate(-1, TURNING_90);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
   Wait(20);
   WallMan();
   Wait(20);
@@ -48,7 +48,7 @@ task main() {
 
 void Movement_Distance(int distance) {
   Wait(20);
-  RotateMotor(OUT_AB, 70, 360*((SensorUS(S1)-distance)/(5.6*PI)));
+  RotateMotorEx(OUT_AB, 70, 360*((SensorUS(S1)-distance)/(5.6*PI)), 0, false, true);
   Wait(20);
 }
 

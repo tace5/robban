@@ -1,0 +1,33 @@
+#include "lego.h"
+
+task main() {
+  /* Setup of sensors */
+  SetSensorUltrasonic(S1);
+  /* Lock C motor in place, see documentation for each parameter */
+  SetOutput(OUT_C, Power, 0,
+                   OutputMode,  OUT_MODE_BRAKE + OUT_MODE_MOTORON + OUT_MODE_REGULATED,
+                   RegMode,     OUT_REGMODE_SPEED,
+                   RunState,    OUT_RUNSTATE_RUNNING,
+                   UpdateFlags, UF_UPDATE_MODE + UF_UPDATE_SPEED);
+  WallMan(OUT_A, S1);
+  Wait(1000);
+  Movement_Rotate(OUT_AB, 1, TURNING_90);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
+  WallMan(OUT_A, S1);
+  Movement_Distance(OUT_AB, S1, 30);
+  
+
+  // Drop book
+  RotateMotor(OUT_C, -40, 80);
+  //PlayFileEx("noice_1.rso", 4, false);
+  Wait(3000);
+  RotateMotor(OUT_C, 40, 80);
+  
+  Movement_Distance(OUT_AB, S1, 50);
+  Movement_Rotate(OUT_AB, -1, TURNING_90);
+  RotateMotorEx(OUT_AB, 70, MOVE_100CM*1, 0, true, true);
+  Wait(20);
+  WallMan(OUT_A, S1);
+  Wait(20);
+  Movement_Distance(OUT_AB, S1, 50);
+}
